@@ -226,7 +226,6 @@ function validateParsedFile() {
                 <Typography>{validateDesc}</Typography>
                 {validateOrEndButton}
                 {validationView}
-
             </Step>
         </Stack>
 

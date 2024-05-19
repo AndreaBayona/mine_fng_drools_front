@@ -19,6 +19,7 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
     // It will store the file uploaded by the user
     const [file, setFile] = useState(null);
     const [metaObjRequest, setMetaObjRequest] = useState(null);
+    const [errors, setErrors] = useState([]);
 
 
 
@@ -79,6 +80,7 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
             })
 
             console.log(res);
+            setErrors(res.messages);
 
         } catch (error) {
             console.log('Error:', error);
@@ -99,27 +101,32 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
 
 
         return (
-            <Stack direction="row" spacing={2}>
-                <Button
-                    disabled={disabled}
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    startIcon={<CloudUploadIcon/>}
-                >
+            <Stack direction="column" spacing={2}>
+                <Stack direction="row" spacing={2}>
+                    <Button
+                        disabled={disabled}
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        startIcon={<CloudUploadIcon/>}
+                    >
 
-                    {file === null ? "Cargar archivo" : "Volver a cargar"}
-                    <Input onChange={handleOnChange} type="file"
-                           sx={{
-                               display: 'none',
-                           }}
-                    ></Input>
-
-
-                </Button>
-
-                {fileLoadFlag}
+                        {file === null ? "Cargar archivo" : "Volver a cargar"}
+                        <Input onChange={handleOnChange} type="file"
+                               sx={{
+                                   display: 'none',
+                               }}
+                        ></Input>
+                    </Button>
+                    {fileLoadFlag}
+                </Stack>
+                {
+                    errors.map((error, index) => (
+                        <Alert severity="error">{errors}</Alert>
+                    ))
+                }
             </Stack>
+
         );
     }
