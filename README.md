@@ -1,0 +1,1 @@
+# mine_fng_drools_front
