@@ -7,12 +7,11 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import React, {Fragment, useEffect, useState} from "react";
 import InputFileUpload from "../components/FileUpload";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import VerifiedIcon from '@mui/icons-material/Verified';
 import {Alarm, Verified} from "@mui/icons-material";
 import useFetch from "../utils/useFetch";
 import {METADATA_VALIDATION} from "../utils/serverConfig";
 import ValidationReport from "../components/ValidationReport";
+import {getPermissionsValidation} from "../services/getPermissionsValidation";
 
 
 const instrctionsTitle = ' Leer Instructivo de creación de préstamo';
@@ -67,6 +66,7 @@ export const LoanCreation = () => {
     const [csvData, setCsvData] = useState(null);
     const [request, setRequest] = useState(null);
     const [validationResponse, setValidationResponse] = useState(null);
+    const [permissions, setPermissions] = useState(true);
 
     let validationView = null;
 
@@ -77,7 +77,7 @@ export const LoanCreation = () => {
         validationView = <ValidationReport/>
     }
     else if (validationResponse && validationResponse.status !== 200) {
-        validationView = <Alert severity="success">Valiidaciones efectuadas</Alert>
+        validationView = <Alert severity="success">Validaciones efectuadas</Alert>
     }
 
     let validateOrEndButton =  <Button
@@ -132,6 +132,17 @@ export const LoanCreation = () => {
         }
 
     }, [request]);
+
+    useEffect(() => {
+        const requestPerm = async  () => {
+            const res = await getPermissionsValidation();
+            setPermissions(res?.hasPermissionForAction);
+            console.log(res?.hasPermissionForAction);
+        }
+
+        requestPerm();
+
+    }, [])
 
 
 
@@ -205,8 +216,8 @@ function validateParsedFile() {
                   title={uploadTitle}
             >
                 <Typography>{uploadDesc}</Typography>
-                <InputFileUpload disabled={!termsAccepted} setCsvData={setCsvData} csvData={csvData} setValidationResponse = {setValidationResponse}/>
-
+                <InputFileUpload disabled={!termsAccepted && !permissions} setCsvData={setCsvData} csvData={csvData} setValidationResponse = {setValidationResponse}/>
+                {!permissions && <Alert severity="error">No tiene permisos para realizar esta accion. Contacte a su administrador</Alert>}
             </Step>
 
 

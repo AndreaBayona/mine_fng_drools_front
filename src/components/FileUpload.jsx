@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 import {Alert, CircularProgress, Input, Stack, Typography} from "@mui/material";
 import Papa from 'papaparse';
 import useFetch from "../utils/useFetch";
-import {METADATA_VALIDATION} from "../utils/serverConfig";
+import {API_URL, METADATA_VALIDATION, PERMISSIONS_VALIDATION} from "../utils/serverConfig";
 
 
 export default function InputFileUpload({disabled, csvData, setCsvData, setValidationResponse}) {
@@ -71,7 +71,7 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
             const fileExtension = fileName.split('.').pop();
 
             const metadataRequest = {
-                url: METADATA_VALIDATION,
+                url: `${API_URL}`,
                 body: {
                     // name: fileName,
                     // size: fileSize,
