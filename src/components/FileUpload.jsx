@@ -27,15 +27,7 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
 
         async function startFetching() {
             setCsvData(null);
-            const result = await fetch(metaObjRequest.url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(metaObjRequest.body)
-                }
-            );
-            if (!ignore) {
-                console.log('Metadata validation result:', result);
-                if (result.status === 200) {
+                if (errors.length === 0 && file) {
                     Papa.parse(file, {
                         complete: (result) => {
                             console.log('Parsed CSV result:', result);
@@ -46,17 +38,9 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
                     });
                 }
             }
-        }
 
-        let ignore = false;
-
-        if (metaObjRequest && metaObjRequest.url) {
-            //startFetching();
-        }
-        return () => {
-            ignore = true;
-        }
-    }, [metaObjRequest]);
+        startFetching();
+    }, [file]);
 
 
     const handleOnChange = async (e) => {
