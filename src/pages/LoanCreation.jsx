@@ -9,7 +9,7 @@ import React, {Fragment, useEffect, useState} from "react";
 import InputFileUpload from "../components/FileUpload";
 import {Alarm, Verified} from "@mui/icons-material";
 import useFetch from "../utils/useFetch";
-import {METADATA_VALIDATION} from "../utils/serverConfig";
+import {ADMIN_ROLE_ID, METADATA_VALIDATION} from "../utils/serverConfig";
 import ValidationReport from "../components/ValidationReport";
 import {getPermissionsValidation} from "../services/getPermissionsValidation";
 
@@ -135,7 +135,7 @@ export const LoanCreation = () => {
 
     useEffect(() => {
         const requestPerm = async  () => {
-            const res = await getPermissionsValidation();
+            const res = await getPermissionsValidation(ADMIN_ROLE_ID);
             setPermissions(res?.hasPermissionForAction);
             console.log(res?.hasPermissionForAction);
         }
@@ -219,8 +219,6 @@ function validateParsedFile() {
                 <InputFileUpload disabled={!termsAccepted && !permissions} setCsvData={setCsvData} csvData={csvData} setValidationResponse = {setValidationResponse}/>
                 {!permissions && <Alert severity="error">No tiene permisos para realizar esta accion. Contacte a su administrador</Alert>}
             </Step>
-
-
             <Step disabled={!termsAccepted || !csvData}
                   step={3}
                   title={validateTitle}

@@ -13,17 +13,20 @@ import Typography from '@mui/material/Typography';
 import {useAuth} from "../conntexts/UserContext";
 import {Alert, Paper} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+import {ADMIN_ROLE_ID, READ_ONLY_ID} from "../utils/serverConfig";
 
 
 const users = [{
     email: "andrea@hotmail.com",
     password: "pass",
     role: "admin",
+    roleId: ADMIN_ROLE_ID,
 
 }, {
-    email: "juanc@gmail.com",
+    email: "andrea2@gmail.com",
     password: "pass",
     role: "read-only",
+    roleId: READ_ONLY_ID,
 
 }]
 

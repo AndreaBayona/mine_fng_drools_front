@@ -7,6 +7,7 @@ import {Alert, CircularProgress, Input, Stack, Typography} from "@mui/material";
 import Papa from 'papaparse';
 import useFetch from "../utils/useFetch";
 import {API_URL, METADATA_VALIDATION, PERMISSIONS_VALIDATION} from "../utils/serverConfig";
+import {getFileFormatValidation} from "../services/getFileFormatValidation";
 
 
 export default function InputFileUpload({disabled, csvData, setCsvData, setValidationResponse}) {
@@ -49,7 +50,7 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
         let ignore = false;
 
         if (metaObjRequest && metaObjRequest.url) {
-            startFetching();
+            //startFetching();
         }
         return () => {
             ignore = true;
@@ -57,12 +58,14 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
     }, [metaObjRequest]);
 
 
-    const handleOnChange = (e) => {
+    const handleOnChange = async (e) => {
         setValidationResponse(null);
+        console.log(e);
         try {
             setLoadError("");
             let myFile = e.target.files[0];
             setFile(myFile);
+
 
             const fileName = myFile.name;
             // Get file size
@@ -70,21 +73,12 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
             // Get file extension
             const fileExtension = fileName.split('.').pop();
 
-            const metadataRequest = {
-                url: `${API_URL}`,
-                body: {
-                    // name: fileName,
-                    // size: fileSize,
-                    // extension: fileExtension
-                    username: 'kminchelle',
-                    password: '0lelplR',
-                    expiresInMins: 30,
-                }
-            };
+            const res = await getFileFormatValidation({
+                fileType: fileExtension,
+                fileSize: fileSize,
+            })
 
-            console.log('Metadata request:', metadataRequest);
-
-            setMetaObjRequest(metadataRequest);
+            console.log(res);
 
         } catch (error) {
             console.log('Error:', error);

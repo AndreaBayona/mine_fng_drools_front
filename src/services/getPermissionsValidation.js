@@ -3,7 +3,7 @@ import {ADMIN_ROLE_ID} from "../utils/serverConfig";
 
 export const PERMISSIONS_VALIDATION = "getPermissionsValidation";
 
-export const getPermissionsValidation = async () => {
+export const getPermissionsValidation = async (roleId) => {
     const body = {
         user: {
             "id": "444",
@@ -11,7 +11,7 @@ export const getPermissionsValidation = async () => {
             "type": "admin",
             "userName": "abayona",
             "password": "pass",
-            "roleIds": [333]
+            "roleIds": [roleId]
         },
         action: {
             "actionType": "LOAD_ANEXO_5_FILE",
