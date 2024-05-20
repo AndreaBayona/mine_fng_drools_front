@@ -15,41 +15,19 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import {Alert, Chip, TablePagination} from "@mui/material";
 import ErrorIcon from '@mui/icons-material/Error';
+//
+//
 
-function generateRandomFields(numFields) {
-    const fields = {};
-    for (let i = 1; i <= numFields; i++) {
-        fields[`Field${i}`] = `Value${i}`;
-    }
-    return fields;
-}
-
-function generateJsonArray(numObjects) {
-    const jsonArray = [];
-    for (let i = 1; i <= numObjects; i++) {
-        const numFields = Math.floor(Math.random() * 16) + 10; // Generates a random number between 10 and 25
-        const jsonObject = {
-            ReferenciaDeArchivo: `REF${String(i).padStart(3, '0')}`,
-            NombresApellidosDeudor: 'Andres Felipe Bayona',
-            NúmeroDocumentoDeudor: '1234567890',
-            ...generateRandomFields(numFields)
-        };
-        jsonArray.push(jsonObject);
-    }
-    console.log(jsonArray);
-    return jsonArray;
-}
-
-// Generate the array
-const rows = generateJsonArray(9);
+//
+// // Generate the array
+// const rowsObject = generateJsonObject();
 
 
-
-const Row = ({row}) => {
+const Row = ({rowID, rowErrors}) => {
     const [open, setOpen] = React.useState(false);
-
-    const fields = [...Object.keys(row)].filter(field => !['ReferenciaDeArchivo', 'NombresApellidosDeudor', 'NúmeroDocumentoDeudor'].includes(field));
-    console.log(fields)
+    console.log(rowID)
+    console.log(rowErrors)
+    const fields = [...Object.keys(rowErrors[rowID]).filter(field => !['name', 'nit', 'address'].includes(field.toLowerCase()))];
 
 
     return (
@@ -65,19 +43,19 @@ const Row = ({row}) => {
                     </IconButton>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                    {row['ReferenciaDeArchivo']}
+                    {rowID}
+                </TableCell>
+                <TableCell align="right">
+                    {rowErrors[rowID]['name']}
                 </TableCell>
 
                 <TableCell align="right">
-                    {row['NombresApellidosDeudor']}
-                </TableCell>
-                <TableCell align="right">
-                    {row['NúmeroDocumentoDeudor']}
+                    {rowErrors[rowID]['nit']}
                 </TableCell>
 
                 <TableCell align="right">
-                    <Chip label=  {fields.length} color="error" />
-                   </TableCell>
+                    <Chip label={fields.length} color="error"/>
+                </TableCell>
 
 
             </TableRow>
@@ -99,11 +77,10 @@ const Row = ({row}) => {
                                 <TableBody>
 
                                     {fields.map((field) => (
-                                        <TableRow key={row['ReferenciaDeArchivo'] + field}>
+                                        <TableRow key={rowID + field}>
                                             <TableCell component="th" scope="row"><ErrorIcon color='error'/></TableCell>
                                             <TableCell component="th" scope="row">{field}</TableCell>
-                                            <TableCell align="right" sx={{color: 'red'}}>{row[field]}</TableCell>
-
+                                            <TableCell align="right" sx={{color: 'red'}}>{rowErrors[rowID][field]}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -117,8 +94,7 @@ const Row = ({row}) => {
 }
 
 
-
-const ValidationReport = () => {
+const ValidationReport = ({errorsObject}) => {
 
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -132,6 +108,7 @@ const ValidationReport = () => {
         setPage(0);
     };
 
+    const rowErrorIds = [...Object.keys(errorsObject['errors'])]
 
     return (
         <Box sx={{width: '100%'}}>
@@ -141,26 +118,26 @@ const ValidationReport = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell/>
-                                <TableCell>Referencia</TableCell>
+                                <TableCell>FilaID</TableCell>
                                 <TableCell align="right">Nombres y apellidos Deudor</TableCell>
-                                <TableCell align="right">Número documento Deudor</TableCell>
+                                <TableCell align="right">NIT</TableCell>
                                 <TableCell align="right">Número de errores</TableCell>
 
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows
+                            {rowErrorIds
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row) => (
-                                <Row key={row['ReferenciaDeArchivo']} row={row}/>
-                            ))}
+                                .map((rowErrorId) => (
+                                    <Row key={rowErrorId} rowID={rowErrorId} rowErrors={errorsObject['errors']}/>
+                                ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={rows.length}
+                    count={rowErrorIds.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

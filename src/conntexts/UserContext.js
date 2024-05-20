@@ -5,16 +5,19 @@ const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
  const [user, setUser] = useState(localStorage.getItem("user") || null);
+ const [role, setRole] = useState(localStorage.getItem("role") || null);
  const [token, setToken] = useState(localStorage.getItem("site") || "");
 
  const navigate = useNavigate();
  const loginAction = (data) => {
   try {
    if (data) {
-    setUser(data.user);
+    setUser(data.user.email);
     setToken(data.token);
+    setRole(data.user.role)
     localStorage.setItem("site", data.token);
-    localStorage.setItem("user", data.user);
+    localStorage.setItem("user", data.user.email);
+    localStorage.setItem("role", data.user.role);
     navigate("/home");
     return;
    }
@@ -29,11 +32,12 @@ const UserProvider = ({ children }) => {
   setToken("");
   localStorage.removeItem("site");
   localStorage.removeItem("user");
+  localStorage.removeItem("role");
   navigate("/login");
  };
 
  return (
-     <UserContext.Provider value={{ token, user, loginAction, logOut }}>
+     <UserContext.Provider value={{ token, user, role, loginAction, logOut }}>
       {children}
      </UserContext.Provider>
  );
