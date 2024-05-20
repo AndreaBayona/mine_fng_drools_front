@@ -7,7 +7,7 @@ To run the project locally, follow these steps:
 
 1. **Clone the Repository**: Clone this repository to your local machine using the following command:
 ```
-git clone https://github.com/your-username/fng-drools-ui.git
+git clone https://github.com/AndreaBayona/mine_fng_drools_front.git
 ```
 
 2. **Install Dependencies**: Navigate to the project directory and install dependencies using yarn:
