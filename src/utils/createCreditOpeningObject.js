@@ -31,9 +31,7 @@ export const createCreditOpeningObject = (csvData) => {
 
     // Iterate over each row of the parsed CSV data
     csvData.forEach((row, index) => {
-        if(index === 0) {
-            return;
-        }
+        if(!row[HEADERS.id]) return;
         console.log({row});
         console.log("row[HEADERS.debtorId]", row[HEADERS.debtorId]);
         // Create an object for the credit quota opening
@@ -51,7 +49,7 @@ export const createCreditOpeningObject = (csvData) => {
             warrantyReference: {
                 id: row[HEADERS.warrantyReferenceId],
                 startDate: new Date(row[HEADERS.warrantyReferenceStartDate]),
-                productWarrantyCode: parseInt(row[HEADERS.warrantyReferenceProductWarrantyCode]),
+                productWarrantyCode: row[HEADERS.warrantyReferenceProductWarrantyCode],
                 supportedPercentage: parseFloat(row[HEADERS.warrantyReferenceSupportedPercentage])
             },
             debtor: {
@@ -60,7 +58,7 @@ export const createCreditOpeningObject = (csvData) => {
                 name: row[HEADERS.debtorName],
                 brithDate: new Date(row[HEADERS.debtorBirthDate]),
                 address: row[HEADERS.debtorAddress],
-                municipalityCode: row[HEADERS.debtorMunicipalityCode],
+                municipalityCode: parseInt(row[HEADERS.debtorMunicipalityCode]),
                 phone: row[HEADERS.debtorPhone],
                 email: row[HEADERS.debtorEmail],
             },
