@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import {Paper, Stack, ListItem, Typography, Chip, Input, Alert, CircularProgress} from "@mui/material";
+import {Paper, Stack, Typography, Chip, Alert, CircularProgress} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import {styled} from "@mui/material/styles";
 import Button from "@mui/material/Button";
@@ -7,12 +7,11 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import React, {Fragment, useEffect, useState} from "react";
 import InputFileUpload from "../components/FileUpload";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import VerifiedIcon from '@mui/icons-material/Verified';
 import {Alarm, Verified} from "@mui/icons-material";
-import useFetch from "../utils/useFetch";
-import {METADATA_VALIDATION} from "../utils/serverConfig";
+import {ADMIN_ROLE_ID, METADATA_VALIDATION} from "../utils/serverConfig";
 import ValidationReport from "../components/ValidationReport";
+import {getPermissionsValidation} from "../services/getPermissionsValidation";
+import {getCreditOpeningsValidation} from "../services/getCreditOpeningsValidation";
 
 
 const instrctionsTitle = ' Leer Instructivo de creación de préstamo';
@@ -98,6 +97,7 @@ export const LoanCreation = () => {
         const [csvData, setCsvData] = useState(null);
         const [request, setRequest] = useState(null);
         const [validationResponse, setValidationResponse] = useState(null);
+        const [permissions, setPermissions] = useState(true);
 
         let validationView = null;
 
@@ -116,7 +116,7 @@ export const LoanCreation = () => {
             variant="contained"
             tabIndex={-1}
             startIcon={<Verified/>}
-            onClick={validateParsedFile}
+            onClick={validateCsvData}
         >
             Validar
         </Button>;
@@ -135,52 +135,26 @@ export const LoanCreation = () => {
             </Button>
         }
 
+        async function validateCsvData() {
+            const result = await getCreditOpeningsValidation(csvData);
+            console.log(result);
+            setValidationResponse(generateJsonObject(result));
+        }
+
         useEffect(() => {
-
-            async function startFetching() {
-                console.log("fetchinig", request);
-                setValidationResponse(null);
-                const result = await fetch(request.url, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(request.body)
-                });
-                if (!ignore) {
-                    // setValidationResponse(result);
-                    setValidationResponse(generateJsonObject());
-                    console.log(result);
-                }
+            const requestPerm = async () => {
+                const res = await getPermissionsValidation(ADMIN_ROLE_ID);
+                setPermissions(res?.hasPermissionForAction);
+                console.log(res?.hasPermissionForAction);
             }
 
-            let ignore = false;
+            requestPerm();
 
-            if (request && request.url) {
-                startFetching();
-            }
-
-            return () => {
-                ignore = true;
-            }
-
-        }, [request]);
+        }, [])
 
 
         function handleAcceptTerms() {
             setTermsAccepted(!termsAccepted);
-        }
-
-        function validateParsedFile() {
-            console.log(request)
-            console.log("request")
-            setRequest({
-                url: METADATA_VALIDATION,
-                method: 'POST',
-                body: {
-                    username: 'kminchelle',
-                    password: 'd0lelplR',
-                    expiresInMins: 30,
-
-                }
-            })
-
         }
 
         function endProcess() {
@@ -204,7 +178,7 @@ export const LoanCreation = () => {
                 display="flex"
                 sx={{height: '100%', width: '80%'}}
             >
-                <Stack spacing={1} sx={{width: '100%'}}>
+                <Stack spacing={2} sx={{width: '100%', gap: "10px"}}>
 
                     <Step disabled={false}
                           step={1}
@@ -237,12 +211,11 @@ export const LoanCreation = () => {
                           title={uploadTitle}
                     >
                         <Typography>{uploadDesc}</Typography>
-                        <InputFileUpload disabled={!termsAccepted} setCsvData={setCsvData} csvData={csvData}
+                        <InputFileUpload disabled={!termsAccepted || !permissions} setCsvData={setCsvData} csvData={csvData}
                                          setValidationResponse={setValidationResponse}/>
-
+                        {!permissions && <Alert severity="error">No tiene permisos para realizar esta accion. Contacte a su
+                            administrador</Alert>}
                     </Step>
-
-
                     <Step disabled={!termsAccepted || !csvData}
                           step={3}
                           title={validateTitle}
