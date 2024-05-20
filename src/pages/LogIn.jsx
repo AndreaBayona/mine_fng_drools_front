@@ -23,7 +23,7 @@ const users = [{
     roleId: ADMIN_ROLE_ID,
 
 }, {
-    email: "andrea2@gmail.com",
+    email: "andrea2@hotmail.com",
     password: "pass",
     role: "read-only",
     roleId: READ_ONLY_ID,
@@ -74,7 +74,8 @@ export default function LogIn() {
                     token: "123",
                     user: {
                         email: foundUser.email,
-                        role: foundUser.role
+                        role: foundUser.role,
+                        roleId: foundUser.roleId
                     }
                 });
 

@@ -12,6 +12,7 @@ import {ADMIN_ROLE_ID, METADATA_VALIDATION} from "../utils/serverConfig";
 import ValidationReport from "../components/ValidationReport";
 import {getPermissionsValidation} from "../services/getPermissionsValidation";
 import {getCreditOpeningsValidation} from "../services/getCreditOpeningsValidation";
+import {useAuth} from "../conntexts/UserContext";
 
 
 const instrctionsTitle = ' Leer Instructivo de creación de préstamo';
@@ -86,6 +87,7 @@ const Step = ({step, title, disabled, children}) => {
 
 
 export const LoanCreation = () => {
+        const {roleId}  = useAuth();
         const Item = styled(Paper)(({theme, disabled}) => ({
             ...theme.typography.body2,
             textAlign: 'center',
@@ -93,11 +95,14 @@ export const LoanCreation = () => {
             backgroundColor: disabled ? theme.palette.primary.disabled : theme.palette.secondary.main,
         }));
 
+
         const [termsAccepted, setTermsAccepted] = React.useState(false);
         const [csvData, setCsvData] = useState(null);
         const [request, setRequest] = useState(null);
         const [validationResponse, setValidationResponse] = useState(null);
         const [permissions, setPermissions] = useState(true);
+
+        console.log("LoanCreation", {roleId});
 
         let validationView = null;
 
@@ -144,7 +149,7 @@ export const LoanCreation = () => {
 
         useEffect(() => {
             const requestPerm = async () => {
-                const res = await getPermissionsValidation(ADMIN_ROLE_ID);
+                const res = await getPermissionsValidation(roleId);
                 setPermissions(res?.hasPermissionForAction);
                 console.log(res?.hasPermissionForAction);
             }

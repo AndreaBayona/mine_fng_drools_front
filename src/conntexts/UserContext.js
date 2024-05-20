@@ -5,6 +5,7 @@ const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
  const [user, setUser] = useState(localStorage.getItem("user") || null);
+ const [roleId, setRoleId] = useState(localStorage.getItem("roleId") || null);
  const [role, setRole] = useState(localStorage.getItem("role") || null);
  const [token, setToken] = useState(localStorage.getItem("site") || "");
 
@@ -14,8 +15,10 @@ const UserProvider = ({ children }) => {
    if (data) {
     setUser(data.user.email);
     setToken(data.token);
-    setRole(data.user.role)
+    setRole(data.user.role);
+    setRoleId(data.user.roleId);
     localStorage.setItem("site", data.token);
+    localStorage.setItem("roleId", data.user.roleId);
     localStorage.setItem("user", data.user.email);
     localStorage.setItem("role", data.user.role);
     navigate("/home");
@@ -37,7 +40,7 @@ const UserProvider = ({ children }) => {
  };
 
  return (
-     <UserContext.Provider value={{ token, user, role, loginAction, logOut }}>
+     <UserContext.Provider value={{ token, user, role, roleId, loginAction, logOut }}>
       {children}
      </UserContext.Provider>
  );
