@@ -136,9 +136,10 @@ export const LoanCreation = () => {
         }
 
         async function validateCsvData() {
+            console.log({csvData});
             const result = await getCreditOpeningsValidation(csvData);
-            console.log(result);
-            setValidationResponse(generateJsonObject(result));
+            console.log("validateCsvData", result);
+            setValidationResponse(result);
         }
 
         useEffect(() => {

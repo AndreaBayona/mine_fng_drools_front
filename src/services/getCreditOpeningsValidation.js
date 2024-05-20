@@ -14,7 +14,7 @@ export const getCreditOpeningsValidation = async (csvFileData) => {
             "password": "pass",
             "roleIds": [ADMIN_ROLE_ID]
         },
-        ...csvFileData
+        creditQuotaOpenings: csvFileData,
     }
     return await request(CREDIT_VALIDATION, 'POST', body);
 };

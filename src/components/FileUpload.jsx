@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import {Alert, CircularProgress, Input, Stack} from "@mui/material";
 import Papa from 'papaparse';
 import {getFileFormatValidation} from "../services/getFileFormatValidation";
+import {createCreditOpeningObject} from "../utils/createCreditOpeningObject";
 
 
 export default function InputFileUpload({disabled, csvData, setCsvData, setValidationResponse}) {
@@ -22,13 +23,15 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
     useEffect(() => {
 
         async function startFetching() {
-            console.log({file});
+            console.log({file})
             setCsvData(null);
             if (errors.length === 0 && file) {
                 Papa.parse(file, {
                     complete: (result) => {
                         console.log('Parsed CSV result:', result);
-                        setCsvData(result.data);
+                        const parsed = createCreditOpeningObject(result.data);
+                        console.log({parsed})
+                        setCsvData(parsed);
                         //setData(csvData);
                     },
                     header: true,
@@ -61,7 +64,7 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
             })
 
             console.log(res);
-            setErrors(res.messages);
+            if(res.messages) setErrors(res.messages);
 
         } catch (error) {
             console.log('Error:', error);
@@ -101,7 +104,7 @@ export default function InputFileUpload({disabled, csvData, setCsvData, setValid
                 </Button>
                 {fileLoadFlag}
             </Stack>
-            {
+            {errors?.length > 0 &&
                 errors.map((error, index) => (
                     <Alert key={index} severity="error">{error}</Alert>
                 ))
